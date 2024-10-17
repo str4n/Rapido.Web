@@ -1,0 +1,30 @@
+﻿@page "/"
+@using MudBlazor
+@using Rapido.Web.UI.Shared.Navbar
+
+<Navbar></Navbar>
+
+<MudContainer Style="margin-top: 10vh">
+    <MudGrid>
+        <MudItem xs="6" Style="margin-top: 10vh">
+            <MudText 
+                Typo="Typo.h1" 
+                Class="text-gradient fadeInUp-animation" 
+                Style="font-weight: bold; margin-bottom: 10px">The future of payments is here
+            </MudText>
+            
+            <MudText 
+                Typo="Typo.h4" 
+                Class="fadeInUp-animation" 
+                Style="font-weight: lighter; opacity: 0.65; color: #6c757d">Send and receive money rapidly, for free
+            </MudText>
+
+            <MudButton Variant="Variant.Filled" Size="Size.Large" Class="rounded-pill btn-primary" Style="margin-right: 13vw; margin-top: 2.5rem">
+                <MudText Typo="Typo.h5" Style="font-weight: bolder">Sign Up</MudText>
+            </MudButton>
+        </MudItem>
+        <MudItem xs="6">
+            <MudImage Src="assets/landing-page-img.jpg" Class="rounded-circle border-solid border shadow" Style="width: 35vw; border-color: #000b4b;"></MudImage>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
