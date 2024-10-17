@@ -11,7 +11,22 @@ body {
 
 .text-primary {
     --bs-text-opacity: 1;
-    color: #001C64 !important;
+    color: var(--bs-primary) !important;
+}
+
+.text-secondary {
+    --bs-text-opacity: 1;
+    color: var(--bs-secondary) !important;
+}
+
+.text-b {
+    --bs-text-opacity: 1;
+    color: var(--bs-blue) !important;
+}
+
+.text-lb {
+    --bs-text-opacity: 1;
+    color: var(--bs-light-blue) !important;
 }
 
 .text-gradient {
@@ -52,7 +67,7 @@ body {
 
 .btn-primary:hover, .btn-primary:focus, .btn-primary:active {
     color: white;
-    background: var(--bs-blue);
+    background: var(--bs-light-blue);
 }
 
 .btn-outline-primary {
