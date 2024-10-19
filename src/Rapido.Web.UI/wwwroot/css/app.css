@@ -70,6 +70,12 @@ body {
     background: var(--bs-light-blue);
 }
 
+.btn-primary:disabled {
+    color: white !important;
+    background: var(--bs-blue) !important;
+    text-transform: none;
+}
+
 .btn-outline-primary {
     border: 0.18rem solid var(--bs-blue);
     color: var(--bs-blue);

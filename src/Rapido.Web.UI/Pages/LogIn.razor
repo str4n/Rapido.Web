@@ -1,4 +1,5 @@
 ﻿@page "/log-in"
+@using System.ComponentModel.DataAnnotations
 @using Rapido.Web.UI.Shared.Navbar
 @using MudBlazor
 
@@ -11,31 +12,69 @@
             Log In to <span class="text-primary" style="font-weight: bolder">Rapido</span>
         </MudText>
     </MudContainer>
-    
-    <MudContainer Style="padding: 5rem 20rem 10rem 20rem">
-        <MudCard Elevation="4" Class="rounded-xl">
-            <MudCardContent>
-                <MudGrid Style="padding: 2rem 5rem 2rem 5rem">
-                    <MudItem xs="12" sm="12">
-                        <MudField Label="Email address" Variant="Variant.Text"></MudField>
-                    </MudItem>
 
-                    <MudItem xs="12" sm="12">
-                        <MudField Label="Password" Variant="Variant.Text"></MudField>
-                    </MudItem>
+    <EditForm Model="@_logInModel" OnValidSubmit="LogInAsync">
+        <DataAnnotationsValidator/>
+        <MudContainer Style="padding: 2rem 20rem 10rem 20rem">
+            <MudCard Elevation="4" Class="rounded-xl">
+                <MudCardContent>
+                    <MudGrid Style="padding: 2rem 5rem 2rem 5rem">
+                        <MudItem xs="12" sm="12">
+                            <MudTextField
+                                Label="Email address"
+                                @bind-Value="_logInModel.Email"
+                                For="@(() => _logInModel.Email)"
+                                Required="true"
+                                RequiredError="Email is required!"/>
+                        </MudItem>
 
-                    <MudItem xs="12" sm="12">
-                        <MudText Class="text-lb">Forgot password?</MudText>
-                    </MudItem>
+                        <MudItem xs="12" sm="12">
+                            <MudTextField
+                                Label="Password"
+                                @bind-Value="_logInModel.Password"
+                                For="@(() => _logInModel.Password)"
+                                InputType="InputType.Password"
+                                Required="true"
+                                RequiredError="Password is required!"/>
+                        </MudItem>
 
-                    <MudItem xs="12" sm="12" Style="margin: 10px 25% 0 30%">
-                        <MudButton Size="Size.Large" Class="btn-primary rounded-pill">
-                            <MudText Typo="Typo.h5" Style="font-weight: bolder; margin: 5px 25px 5px 25px ">Log In</MudText>
-                        </MudButton>
-                    </MudItem>
-                </MudGrid>
-            </MudCardContent>
-        </MudCard>
-    </MudContainer>
+                        <MudItem xs="12" sm="12">
+                            <MudText Class="text-lb">Forgot password?</MudText>
+                        </MudItem>
+
+                        <MudItem xs="12" sm="12" Style="margin: 10px 25% 0 30%">
+                            <MudButton
+                                Size="Size.Large"
+                                ButtonType="ButtonType.Submit"
+                                Class="btn-primary rounded-pill">
+                                <MudText Typo="Typo.h5" Style="font-weight: bolder; margin: 5px 25px 5px 25px ">Log In</MudText>
+                            </MudButton>
+                        </MudItem>
+                    </MudGrid>
+                </MudCardContent>
+            </MudCard>
+        </MudContainer>
+    </EditForm>
     
 </MudContainer>
+
+@code {
+    private bool? _success;
+    private bool? _submitted;
+    private LogInModel _logInModel = new();
+
+    private class LogInModel
+    {
+        [Required]
+        [EmailAddress]
+        public string? Email { get; set; }
+        
+        [Required]
+        public string? Password { get; set; }
+    }
+
+    private async Task LogInAsync()
+    {
+        _submitted = true;
+    }
+}
