@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Rapido.Web.Core.Storage;
+using Rapido.Web.Core.Users.Models;
+using Rapido.Web.Core.Users.Requests;
 using Rapido.Web.Core.Users.Services;
 
 namespace Rapido.Web.UI.Services;
@@ -9,6 +11,7 @@ internal sealed class AuthenticationService : IAuthenticationService
     private readonly IUserService _userService;
     private readonly ILocalStorageService _localStorageService;
     private readonly NavigationManager _navigationManager;
+    private User? _user;
 
     public AuthenticationService(IUserService userService, ILocalStorageService localStorageService, 
         NavigationManager navigationManager)
@@ -17,19 +20,46 @@ internal sealed class AuthenticationService : IAuthenticationService
         _localStorageService = localStorageService;
         _navigationManager = navigationManager;
     }
-    
+
+    public Task<User?> GetUserAsync()
+        => Task.FromResult(_user);
+
     public async Task InitializeAsync()
+        => _user = await _localStorageService.GetAsync<User>("user");
+
+    public async Task<bool?> SignInAsync(string email, string password)
     {
-        throw new NotImplementedException();
+        var request = new SignInRequest(email, password);
+        var response = await _userService.SignInAsync(request);
+
+        if (response?.HttpResponse is null)
+        {
+            return null;
+        }
+
+        if (response.Succeeded is false)
+        {
+            return false;
+        }
+
+        _user = new User
+        {
+            Id = response.Value!.UserId.ToString(),
+            Email = response.Value.Email,
+            Role = response.Value.Role,
+            JwtToken = response.Value.Token
+        };
+
+        await _localStorageService.SetAsync("user", _user);
+
+        return true;
     }
 
-    public Task<bool?> LogInAsync(string email, string password)
+    public async Task SignOutAsync()
     {
-        throw new NotImplementedException();
-    }
+        _user = null;
 
-    public Task LogOutAsync()
-    {
-        throw new NotImplementedException();
+        await _localStorageService.RemoveAsync("user");
+        _navigationManager.NavigateTo("log-in");
     }
 }

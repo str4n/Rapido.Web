@@ -2,6 +2,10 @@
 @using System.ComponentModel.DataAnnotations
 @using Rapido.Web.UI.Shared.Navbar
 @using MudBlazor
+@using Rapido.Web.UI.Services
+@inject IAuthenticationService AuthService
+@inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
 
 <Navbar></Navbar>
 
@@ -46,7 +50,8 @@
                             <MudButton
                                 Size="Size.Large"
                                 ButtonType="ButtonType.Submit"
-                                Class="btn-primary rounded-pill">
+                                Class="btn-primary rounded-pill"
+                                Disabled="_submitted">
                                 <MudText Typo="Typo.h5" Style="font-weight: bolder; margin: 5px 25px 5px 25px ">Log In</MudText>
                             </MudButton>
                         </MudItem>
@@ -59,8 +64,7 @@
 </MudContainer>
 
 @code {
-    private bool? _success;
-    private bool? _submitted;
+    private bool _submitted;
     private LogInModel _logInModel = new();
 
     private class LogInModel
@@ -76,5 +80,23 @@
     private async Task LogInAsync()
     {
         _submitted = true;
+        var loggedIn = await AuthService.SignInAsync(_logInModel.Email!, _logInModel.Password!);
+        _submitted = false;
+
+        if (loggedIn is null)
+        {
+            Snackbar.Add("Couldn't log in - service is unavailable", Severity.Error);
+            return;
+        }
+        
+        if (loggedIn.Value)
+        {
+            Snackbar.Add("Logged in.", Severity.Success);
+            NavigationManager.NavigateTo("/");
+        }
+        else
+        {
+            Snackbar.Add("Invalid email or password.", Severity.Error);
+        }
     }
 }

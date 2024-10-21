@@ -1,8 +1,11 @@
-﻿namespace Rapido.Web.UI.Services;
+﻿using Rapido.Web.Core.Users.Models;
+
+namespace Rapido.Web.UI.Services;
 
 public interface IAuthenticationService
 {
+    Task<User?> GetUserAsync();
     Task InitializeAsync();
-    Task<bool?> LogInAsync(string email, string password);
-    Task LogOutAsync();
+    Task<bool?> SignInAsync(string email, string password);
+    Task SignOutAsync();
 }

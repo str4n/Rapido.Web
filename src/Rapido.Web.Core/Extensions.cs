@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Rapido.Web.Core.Clients;
 using Rapido.Web.Core.Storage;
+using Rapido.Web.Core.Users.Services;
 
 namespace Rapido.Web.Core;
 
@@ -10,7 +11,8 @@ public static class Extensions
     {
         services
             .AddScoped<ILocalStorageService, LocalStorageService>()
-            .AddScoped<IHttpClient, CustomHttpClient>();
+            .AddScoped<IUserService, UserService>()
+            .AddTransient<IHttpClient, CustomHttpClient>();
         
         return services;
     }
