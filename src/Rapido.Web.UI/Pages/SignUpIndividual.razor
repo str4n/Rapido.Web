@@ -1,0 +1,150 @@
+﻿@page "/sign-up/individual"
+@using System.ComponentModel.DataAnnotations
+@using System.Net
+@using System.Text.RegularExpressions
+@using MudBlazor
+@using Rapido.Web.Core.Users.Requests
+@using Rapido.Web.Core.Users.Services
+@using Rapido.Web.UI.Services
+@using Rapido.Web.UI.Shared.Navbar
+
+@inject IUserService UserService
+@inject IApiResponseHandler ApiResponseHandler
+@inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
+
+<Navbar></Navbar>
+
+<MudContainer Style="margin-top: 10vh">
+    
+    <MudContainer>
+        <MudText Typo="Typo.h2" Align="Align.Center">
+            Sign up for <span class="text-primary" style="font-weight: bolder">Rapido</span>
+        </MudText>
+    </MudContainer>
+
+    <MudForm Model="@_signUpModel" @bind-IsValid="@_isFormValid">
+        <DataAnnotationsValidator/>
+        <MudContainer Style="padding: 2rem 20rem 10rem 20rem">
+            <MudCard Elevation="4" Class="rounded-xl">
+                <MudCardContent>
+                    <MudGrid Style="padding: 2rem 5rem 2rem 5rem">
+                        <MudItem xs="12" sm="12">
+                            <MudTextField
+                                Label="Email address"
+                                @bind-Value="_signUpModel.Email"
+                                For="@(() => _signUpModel.Email)"
+                                Required="true"
+                                RequiredError="Email is required!"/>
+                        </MudItem>
+
+                        <MudItem xs="12" sm="12">
+                            <MudTextField
+                                Label="Password"
+                                @bind-Value="_signUpModel.Password"
+                                For="@(() => _signUpModel.Password)"
+                                InputType="InputType.Password"
+                                Required="true"
+                                RequiredError="Password is required!"
+                                Validation="@(new Func<string, IEnumerable<string>>(PasswordStrength))"
+                                @ref="_passwordField"/>
+                        </MudItem>
+
+                        <MudItem xs="12" sm="12">
+                            <MudTextField
+                                Label="Repeat password"
+                                @bind-Value="_signUpModel.RepeatPassword"
+                                For="@(() => _signUpModel.RepeatPassword)"
+                                InputType="InputType.Password"
+                                Required="true"
+                                RequiredError="Password is required!"
+                                Validation="@(new Func<string, string>(PasswordMatch))"/>
+                        </MudItem>
+
+                        <MudItem xs="12" sm="12" Style="margin: 10px 27% 0 25%">
+                            <MudButton
+                                Size="Size.Large"
+                                ButtonType="ButtonType.Button"
+                                Class="btn-primary rounded-pill"
+                                OnClick="SignUpAsync"
+                                Disabled="!_isFormValid || _submitted">
+                                <MudText Typo="Typo.h5" Style="font-weight: bolder; margin: 5px 25px 5px 25px ">Sign up</MudText>
+                            </MudButton>
+                        </MudItem>
+                    </MudGrid>
+                </MudCardContent>
+            </MudCard>
+        </MudContainer>
+    </MudForm>
+    
+</MudContainer>
+
+@code {
+    private bool _submitted;
+    private bool _isFormValid;
+    private SignUpModel _signUpModel = new();
+    private MudTextField<string> _passwordField;
+
+    private class SignUpModel
+    {
+        [Required]
+        [EmailAddress]
+        public string? Email { get; set; }
+        
+        [Required]
+        public string? Password { get; set; }
+        
+        [Required]
+        public string? RepeatPassword { get; set; }
+    }
+
+    private IEnumerable<string> PasswordStrength(string password)
+    {
+        if (string.IsNullOrWhiteSpace(password))
+        {
+            yield return "Password is required!";
+            yield break;
+        }
+        if (password.Length < 8)
+            yield return "Password must be at least of length 8";
+        if (!Regex.IsMatch(password, @"[A-Z]"))
+            yield return "Password must contain at least one capital letter";
+        if (!Regex.IsMatch(password, @"[a-z]"))
+            yield return "Password must contain at least one lowercase letter";
+        if (!Regex.IsMatch(password, @"[0-9]"))
+            yield return "Password must contain at least one digit";
+    }
+    
+    private string PasswordMatch(string arg)
+    {
+        if (_passwordField.Value != arg)
+            return "Passwords don't match";
+        return null!;
+    }
+
+    private async Task SignUpAsync()
+    {
+        _submitted = true;
+        
+        var request = new SignUpRequest(_signUpModel.Email!, _signUpModel.Password!, "Individual");
+        var signUp = () => UserService.SignUpAsync(request);
+        var response = await ApiResponseHandler.HandleAsync(signUp);
+        
+        _submitted = false;
+        
+        if (response is null || response.HttpResponse.StatusCode == HttpStatusCode.BadGateway)
+        {
+            Snackbar.Add("Couldn't sign up - service is unavailable", Severity.Error);
+            return;
+        }
+
+        if (response.Succeeded)
+        {
+            StateHasChanged();
+            _signUpModel.Email = default;
+            _signUpModel.Password = default;
+            Snackbar.Add("Account has been created.", Severity.Success);
+            NavigationManager.NavigateTo("log-in");
+        }
+    }
+}
