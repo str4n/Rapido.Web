@@ -47,7 +47,9 @@ internal sealed class AuthenticationService : IAuthenticationService
             Id = response.Value!.UserId.ToString(),
             Email = response.Value.Email,
             Role = response.Value.Role,
-            JwtToken = response.Value.Token
+            AccessToken = response.Value.AccessToken,
+            RefreshToken = response.Value.RefreshToken,
+            TokenExpires = response.Value.Expires
         };
 
         await _localStorageService.SetAsync("user", _user);
