@@ -1,0 +1,97 @@
+﻿@page "/account-selection"
+@using System.Reflection.Metadata.Ecma335
+@using Rapido.Web.UI.Shared.Navbar
+@using MudBlazor
+@inject NavigationManager NavigationManager
+
+<Navbar></Navbar>
+
+<MudContainer Style="margin-top: 5vh">
+
+    <MudContainer>
+        <MudText Typo="Typo.h5" Style="font-weight: lighter; opacity: 0.65; color: #6c757d" Align="Align.Center">sign up for Rapido</MudText>
+
+        <MudText Typo="Typo.h2" Style="font-weight: bold" Align="Align.Center">
+            <span class="text-primary" style="font-weight: bolder">The rapid way to pay</span> 
+            <br/> 
+            <span class="text-secondary" style="font-weight: bolder">and get paid</span>
+        </MudText>
+    </MudContainer>
+
+    <MudContainer Style="width: 55vw; height: 20vh; margin-top: 8vh">
+        <MudCard Elevation="4" Class="rounded-xl shadow">
+            <MudCardContent>
+                <MudGrid Style="margin: 40px">
+                    <MudItem xs="6">
+                        <input type="radio" name="account-selection" id="individual" style="margin-right: 10px" @onclick="SelectIndividual"/>
+                        <label for="individual" style="margin-right: 25%">
+                            <MudText Typo="Typo.h2" Class="text-primary" Style="font-weight: bold">Individual</MudText>
+                        </label>
+
+                        <MudText Typo="Typo.body1" Style="margin-top: 10px">Spend and manage your money, all from one app.</MudText>
+                    </MudItem>
+                    
+                    <MudItem xs="6">
+                        <input type="radio" name="account-selection" id="corporate" style="margin-right: 10px" @onclick="SelectCorporate"/>
+                        <label for="corporate">
+                            <MudText Typo="Typo.h2" Class="text-primary" Style="font-weight: bold">Corporate</MudText>
+                        </label>
+
+                        <MudText Typo="Typo.body1" Style="margin-top: 10px">Accept payments, manage donations, and take control.</MudText>
+                    </MudItem>
+                </MudGrid>
+            </MudCardContent>
+            
+            <MudCardActions Style="display: flex; justify-content: center; margin: 5vh 0 5vh 0">
+                <MudButton 
+                    Variant="Variant.Filled" 
+                    Size="Size.Large" 
+                    Class="rounded-pill btn-primary" 
+                    OnClick="NavigateToSignUp"
+                    Disabled="!_selected">
+                    <MudText Typo="Typo.h5" Style="font-weight: bolder">Get Started</MudText>
+                </MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudContainer>
+    
+</MudContainer>
+
+@code {
+    private AccountType _selectedAccountType;
+    private bool _selected;
+    
+    private enum AccountType {
+        Individual,
+        Corporate
+    }
+
+    private void SelectIndividual()
+    {
+        _selectedAccountType = AccountType.Individual;
+        _selected = true;
+    }
+
+    private void SelectCorporate()
+    {
+        _selectedAccountType = AccountType.Corporate;
+        _selected = true;
+    }
+
+    private void NavigateToSignUp()
+    {
+        switch (_selectedAccountType)
+        {
+            case AccountType.Individual:
+                NavigationManager.NavigateTo("sign-up/individual");
+                break;
+            case AccountType.Corporate:
+                NavigationManager.NavigateTo("sign-up/corporate");
+                break;
+            default:
+                NavigationManager.NavigateTo("sign-up/corporate");
+                break;
+        }
+    }
+
+}
