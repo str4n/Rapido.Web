@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.Extensions.DependencyInjection;
+using Rapido.Web.Core.Auth;
 using Rapido.Web.Core.Clients;
 using Rapido.Web.Core.Storage;
 using Rapido.Web.Core.Users.Services;
@@ -13,6 +15,8 @@ public static class Extensions
             .AddScoped<ILocalStorageService, LocalStorageService>()
             .AddScoped<IUserService, UserService>()
             .AddTransient<IHttpClient, CustomHttpClient>();
+
+        services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
         
         return services;
     }

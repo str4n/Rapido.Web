@@ -7,5 +7,5 @@ public interface IAuthenticationService
     Task<User?> GetUserAsync();
     Task InitializeAsync();
     Task<bool?> SignInAsync(string email, string password);
-    Task SignOutAsync();
+    Task SignOutAndNavigateAsync(string route);
 }

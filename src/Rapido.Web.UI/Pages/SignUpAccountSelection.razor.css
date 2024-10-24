@@ -1,0 +1,17 @@
+﻿input[type=radio] {
+    width: 50px;
+    height: 50px;
+    appearance: none;
+    -webkit-appearance: none;
+    border-radius: 50%;
+    border: 1px solid #979797;
+    outline: 1px solid white;
+}
+
+input[type=radio]:checked {
+    background-color: #0070E0;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='2' fill='%23fff'/%3e%3c/svg%3e");
+    border-color: #8f98f9;
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgba(30, 48, 243, 0.25);
+}

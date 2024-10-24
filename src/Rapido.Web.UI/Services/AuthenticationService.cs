@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
+using Rapido.Web.Core.Auth;
 using Rapido.Web.Core.Storage;
 using Rapido.Web.Core.Users.Models;
 using Rapido.Web.Core.Users.Requests;
@@ -11,14 +13,16 @@ internal sealed class AuthenticationService : IAuthenticationService
     private readonly IUserService _userService;
     private readonly ILocalStorageService _localStorageService;
     private readonly NavigationManager _navigationManager;
+    private readonly CustomAuthenticationStateProvider? _authenticationStateProvider;
     private User? _user;
 
     public AuthenticationService(IUserService userService, ILocalStorageService localStorageService, 
-        NavigationManager navigationManager)
+        NavigationManager navigationManager, AuthenticationStateProvider authenticationStateProvider)
     {
         _userService = userService;
         _localStorageService = localStorageService;
         _navigationManager = navigationManager;
+        _authenticationStateProvider = authenticationStateProvider as CustomAuthenticationStateProvider;
     }
 
     public Task<User?> GetUserAsync()
@@ -51,17 +55,19 @@ internal sealed class AuthenticationService : IAuthenticationService
             RefreshToken = response.Value.RefreshToken,
             TokenExpires = response.Value.Expires
         };
-
+        
         await _localStorageService.SetAsync("user", _user);
+        await _authenticationStateProvider?.UpdateAuthenticationState(_user)!;
 
         return true;
     }
 
-    public async Task SignOutAsync()
+    public async Task SignOutAndNavigateAsync(string route)
     {
         _user = null;
 
         await _localStorageService.RemoveAsync("user");
-        _navigationManager.NavigateTo("log-in");
+        await _authenticationStateProvider?.UpdateAuthenticationState(null)!;
+        _navigationManager.NavigateTo(route);
     }
 }

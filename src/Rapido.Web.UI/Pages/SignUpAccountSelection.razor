@@ -1,5 +1,4 @@
-﻿@page "/account-selection"
-@using System.Reflection.Metadata.Ecma335
+﻿@page "/sign-up/account-selection"
 @using Rapido.Web.UI.Shared.Navbar
 @using MudBlazor
 @inject NavigationManager NavigationManager
@@ -89,7 +88,7 @@
                 NavigationManager.NavigateTo("sign-up/corporate");
                 break;
             default:
-                NavigationManager.NavigateTo("sign-up/corporate");
+                NavigationManager.NavigateTo("/");
                 break;
         }
     }

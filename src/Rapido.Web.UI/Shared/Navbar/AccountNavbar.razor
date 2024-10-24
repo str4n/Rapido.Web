@@ -1,0 +1,24 @@
+﻿@using Microsoft.AspNetCore.Authorization
+@using MudBlazor
+@using Rapido.Web.UI.Services
+@inject IAuthenticationService AuthService
+
+<MudAppBar Elevation="0" Style="background-color: var(--bs-primary); margin: auto; padding: 20px" Fixed="false">
+    <MudText Typo="Typo.h3" Style="margin-left: 13vw;"><a style="font-weight: bolder; color: white" href="/my-account/summary">Rapido</a></MudText>
+
+    <MudText Typo="Typo.h5" Style="margin: 0 1vw 0 4vw; font-weight: bold"><a style="color: white; cursor: pointer">Home</a></MudText>
+    <MudText Typo="Typo.h5" Style="margin: 0 1vw 0 1vw; font-weight: bold"><a style="color: white; cursor: pointer">Send & Request</a></MudText>
+    <MudText Typo="Typo.h5" Style="margin: 0 1vw 0 1vw; font-weight: bold"><a style="color: white; cursor: pointer">Balances</a></MudText>
+    <MudText Typo="Typo.h5" Style="margin: 0 1vw 0 1vw; font-weight: bold"><a style="color: white; cursor: pointer">Help</a></MudText>
+    
+    <MudSpacer/>
+
+    <MudText Typo="Typo.h5" Style="font-weight: bold; margin-right: 13vw"><a style="color: white; cursor: pointer" @onclick="SignOut">Log out</a></MudText>
+
+</MudAppBar>
+
+@code {
+
+    private void SignOut() => AuthService.SignOutAndNavigateAsync("/");
+
+}

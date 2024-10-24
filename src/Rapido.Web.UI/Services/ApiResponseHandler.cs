@@ -23,7 +23,7 @@ internal sealed class ApiResponseHandler : IApiResponseHandler
         if (response.HttpResponse.StatusCode == HttpStatusCode.Unauthorized)
         {
             _snackbar.Add("Your session has expired - please sign in again.", Severity.Error);
-            await _authService.SignOutAsync();
+            await _authService.SignOutAndNavigateAsync("/log-in");
             return null;
         }
 
