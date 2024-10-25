@@ -1,5 +1,7 @@
 ﻿using System.Net;
+using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
+using Rapido.Web.Core.Auth;
 using Rapido.Web.Core.Clients;
 
 namespace Rapido.Web.UI.Services;
@@ -28,6 +30,25 @@ internal sealed class ApiResponseHandler : IApiResponseHandler
         }
 
         if (response.Succeeded)
+        {
+            return response;
+        }
+
+        return null;
+    }
+
+    public async Task<ApiResponse<T>?> HandleAsync<T>(Func<Task<ApiResponse>> request)
+    {
+        var response = await request() as ApiResponse<T>;
+        
+        if (response?.HttpResponse.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            _snackbar.Add("Your session has expired - please sign in again.", Severity.Error);
+            await _authService.SignOutAndNavigateAsync("/log-in");
+            return null;
+        }
+
+        if (response!.Succeeded)
         {
             return response;
         }

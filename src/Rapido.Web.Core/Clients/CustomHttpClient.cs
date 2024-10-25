@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Rapido.Web.Core.Storage;
+using Rapido.Web.Core.Users.Models;
 
 namespace Rapido.Web.Core.Clients;
 
@@ -69,6 +70,13 @@ internal sealed class CustomHttpClient : IHttpClient
         
         try
         {
+            var user = await _localStorageService.GetAsync<User>("user");
+
+            if (user is not null)
+            {
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user.AccessToken);
+            }
+            
             var requestId = Guid.NewGuid().ToString("N");
             
             _logger.LogInformation($"Sending HTTP request [ID: {requestId}]...", requestId);

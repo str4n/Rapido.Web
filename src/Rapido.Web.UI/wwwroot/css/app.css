@@ -89,6 +89,19 @@ body {
     background: var(--bs-blue);
 }
 
+.btn-outline-lb {
+    border: 0.18rem solid var(--bs-light-blue);
+    color: var(--bs-light-blue);
+    text-transform: none;
+    padding-left: 23px;
+    padding-right: 23px;
+}
+
+.btn-outline-lb:hover, .btn-outline-lb:focus, .btn-outline-lb:active {
+    color: white;
+    background: var(--bs-light-blue);
+}
+
 .nav-link {
     color: #6d6d6d;
 }

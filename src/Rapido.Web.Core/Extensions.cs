@@ -4,6 +4,7 @@ using Rapido.Web.Core.Auth;
 using Rapido.Web.Core.Clients;
 using Rapido.Web.Core.Storage;
 using Rapido.Web.Core.Users.Services;
+using Rapido.Web.Core.Wallets.Services;
 
 namespace Rapido.Web.Core;
 
@@ -14,6 +15,7 @@ public static class Extensions
         services
             .AddScoped<ILocalStorageService, LocalStorageService>()
             .AddScoped<IUserService, UserService>()
+            .AddScoped<IWalletService, WalletService>()
             .AddTransient<IHttpClient, CustomHttpClient>();
 
         services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();

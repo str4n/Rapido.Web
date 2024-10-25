@@ -1,10 +1,111 @@
 ﻿@page "/my-account/summary"
+@using System.Net
 @using Microsoft.AspNetCore.Authorization
 @using Rapido.Web.UI.Shared.Navbar
+@using MudBlazor
+@using Rapido.Web.Core.Wallets.DTO
+@using Rapido.Web.Core.Wallets.Services
+@using Rapido.Web.UI.Services
+@inject IApiResponseHandler ApiResponseHandler
+@inject IWalletService WalletService
+@inject ISnackbar Snackbar
 @attribute [Authorize]
 
 <AccountNavbar></AccountNavbar>
 
+<MudContainer Style="margin-top: 8vh">
+    <MudGrid>
+        <MudItem xs="6" sm="6">
+            <MudCard Elevation="4" Class="rounded-xl shadow" Style="padding: 1vh 2vw 1vh 2vw">
+                <MudCardContent>
+                    <MudText Typo="Typo.h3" Style="font-weight: lighter; color: black">Current balance</MudText>
+
+                    <MudDivider Style="margin-top: 2vh"/>
+
+                    <MudContainer>
+                        <MudText Typo="Typo.h1" Style="font-weight: lighter; color: #262626; margin-top: 3vh">
+                            $0
+                            <MudText Style="font-weight: normal; opacity: 0.65; color: #616769; font-size: large; letter-spacing: 0.05rem;" Inline="true">Available</MudText>
+                        </MudText>
+                    </MudContainer>
+                </MudCardContent>
+
+                <MudCardActions>
+                    <MudContainer Style="margin: 1vh 0 2vh 0">
+                        <MudButton Variant="Variant.Outlined" Size="Size.Large" Class="rounded-pill btn-outline-lb" Href="">
+                            <MudText Typo="Typo.h5" Style="font-weight: normal">Transfer Funds</MudText>
+                        </MudButton>
+                    </MudContainer>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+
+        <MudItem xs="6" sm="6">
+            <MudCard Elevation="4" Class="rounded-xl shadow" Style="padding: 1vh 2vw 1vh 2vw;">
+                <MudCardContent>
+                    <MudContainer Style="margin-top: 1vh">
+                        <MudButton
+                            Variant="Variant.Filled"
+                            Size="Size.Large"
+                            Class="rounded-pill btn-primary"
+                            Style="margin: 0 80px 0 20px"
+                            Href="">
+                            <MudText Typo="Typo.h5" Style="font-weight: bolder; margin: 2px 30px 2px 30px">Send</MudText>
+                        </MudButton>
+
+                        <MudButton
+                            Variant="Variant.Filled"
+                            Size="Size.Large"
+                            Class="rounded-pill btn-primary"
+                            Href="">
+                            <MudText Typo="Typo.h5" Style="font-weight: bolder; margin: 2px 15px 2px 15px">Request</MudText>
+                        </MudButton>
+                    </MudContainer>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <MudItem xs="6" sm="6">
+            <MudCard Elevation="4" Class="rounded-xl shadow" Style="padding: 1vh 2vw 1vh 2vw;">
+                <MudCardContent>
+                    <MudText Typo="Typo.h3" Style="font-weight: lighter; color: black">Recent Activity</MudText>
+
+                    <MudDivider Style="margin-top: 2vh"/>
+
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
 @code {
+
+    private bool _succeeded;
+    private WalletDto _walletDto;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetWallet();
+    }
     
+
+    private async Task GetWallet()
+    {
+        var response = 
+            await ApiResponseHandler.HandleAsync<WalletDto>(async () => await WalletService.GetWalletAsync());
+
+        if (response is null || response.HttpResponse.StatusCode == HttpStatusCode.BadGateway)
+        {
+            Snackbar.Add("Couldn't get your wallet - service is unavailable", Severity.Error);
+            return;
+        }
+        
+        _succeeded = response.Succeeded;
+
+        if (_succeeded)
+        {
+            _walletDto = response.Value;
+        }
+    }
+
 }

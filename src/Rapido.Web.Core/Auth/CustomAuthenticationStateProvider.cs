@@ -42,7 +42,7 @@ public sealed class CustomAuthenticationStateProvider : AuthenticationStateProvi
         }
     }
 
-    public async Task UpdateAuthenticationState(User? user)
+    public Task UpdateAuthenticationState(User? user)
     {
         ClaimsPrincipal claimsPrincipal;
 
@@ -60,5 +60,6 @@ public sealed class CustomAuthenticationStateProvider : AuthenticationStateProvi
         }
         
         NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(claimsPrincipal)));
+        return Task.CompletedTask;
     }
 }
