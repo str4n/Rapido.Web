@@ -34,7 +34,7 @@ internal sealed class ApiResponseHandler : IApiResponseHandler
             return response;
         }
 
-        return null;
+        return response;
     }
 
     public async Task<ApiResponse<T>?> HandleAsync<T>(Func<Task<ApiResponse>> request)
@@ -53,6 +53,6 @@ internal sealed class ApiResponseHandler : IApiResponseHandler
             return response;
         }
 
-        return null;
+        return response;
     }
 }

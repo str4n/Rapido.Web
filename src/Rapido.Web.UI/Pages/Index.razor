@@ -1,6 +1,8 @@
 ﻿@page "/"
 @using MudBlazor
+@using Rapido.Web.UI.Services
 @using Rapido.Web.UI.Shared.Navbar
+@inject IAuthenticationService AuthService
 
 <Navbar></Navbar>
 
@@ -28,3 +30,10 @@
         </MudItem>
     </MudGrid>
 </MudContainer>
+
+@code {
+
+    protected override async Task OnInitializedAsync()
+        => await AuthService.NavigateIfSignedIn("");
+
+}

@@ -77,6 +77,9 @@
         public string? Password { get; set; }
     }
 
+    protected override async Task OnInitializedAsync()
+        => await AuthService.NavigateIfSignedIn("/wallet/summary");
+
     private async Task LogInAsync()
     {
         _submitted = true;
@@ -92,7 +95,7 @@
         if (loggedIn.Value)
         {
             Snackbar.Add("Logged in.", Severity.Success);
-            NavigationManager.NavigateTo("/my-account/summary");
+            NavigationManager.NavigateTo("/wallet/summary");
         }
         else
         {

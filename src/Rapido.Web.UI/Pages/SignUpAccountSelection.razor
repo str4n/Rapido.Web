@@ -1,7 +1,9 @@
 ﻿@page "/sign-up/account-selection"
 @using Rapido.Web.UI.Shared.Navbar
 @using MudBlazor
+@using Rapido.Web.UI.Services
 @inject NavigationManager NavigationManager
+@inject IAuthenticationService AuthService
 
 <Navbar></Navbar>
 
@@ -64,6 +66,9 @@
         Individual,
         Corporate
     }
+    
+    protected override async Task OnInitializedAsync()
+        => await AuthService.NavigateIfSignedIn("/wallet/summary");
 
     private void SelectIndividual()
     {

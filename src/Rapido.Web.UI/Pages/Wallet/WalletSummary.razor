@@ -1,4 +1,4 @@
-﻿@page "/my-account/summary"
+﻿@page "/wallet/summary"
 @using System.Net
 @using Microsoft.AspNetCore.Authorization
 @using Rapido.Web.UI.Shared.Navbar
@@ -9,6 +9,7 @@
 @inject IApiResponseHandler ApiResponseHandler
 @inject IWalletService WalletService
 @inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
 @attribute [Authorize]
 
 <AccountNavbar></AccountNavbar>
@@ -94,9 +95,16 @@
         var response = 
             await ApiResponseHandler.HandleAsync<WalletDto>(async () => await WalletService.GetWalletAsync());
 
-        if (response is null || response.HttpResponse.StatusCode == HttpStatusCode.BadGateway)
+        if (response is null || response.HttpResponse.StatusCode is HttpStatusCode.BadGateway)
         {
             Snackbar.Add("Couldn't get your wallet - service is unavailable", Severity.Error);
+            return;
+        }
+
+        if (response.HttpResponse.StatusCode is HttpStatusCode.NotFound)
+        {
+            Snackbar.Add("Please complete your profile to continue using our services.", Severity.Info);
+            NavigationManager.NavigateTo("my-account/complete");
             return;
         }
         

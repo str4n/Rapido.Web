@@ -9,6 +9,7 @@
 @using Rapido.Web.UI.Shared.Navbar
 
 @inject IUserService UserService
+@inject IAuthenticationService AuthService
 @inject IApiResponseHandler ApiResponseHandler
 @inject ISnackbar Snackbar
 @inject NavigationManager NavigationManager
@@ -97,6 +98,9 @@
         [Required]
         public string? RepeatPassword { get; set; }
     }
+    
+    protected override async Task OnInitializedAsync()
+        => await AuthService.NavigateIfSignedIn("/wallet/summary");
 
     private IEnumerable<string> PasswordStrength(string password)
     {

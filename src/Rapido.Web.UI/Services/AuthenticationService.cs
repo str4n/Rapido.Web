@@ -29,7 +29,10 @@ internal sealed class AuthenticationService : IAuthenticationService
         => Task.FromResult(_user);
 
     public async Task InitializeAsync()
-        => _user = await _localStorageService.GetAsync<User>("user");
+    {
+        _user = await _localStorageService.GetAsync<User>("user");
+        _authenticationStateProvider?.UpdateAuthenticationState(_user);
+    }
 
     public async Task<bool?> SignInAsync(string email, string password)
     {
@@ -69,5 +72,22 @@ internal sealed class AuthenticationService : IAuthenticationService
         await _localStorageService.RemoveAsync("user");
         await _authenticationStateProvider?.UpdateAuthenticationState(null)!;
         _navigationManager.NavigateTo(route);
+    }
+
+    public async Task NavigateIfSignedIn(string route)
+    {
+        var state = await _authenticationStateProvider?.GetAuthenticationStateAsync()!;
+
+        if (state.User.Identity is null)
+        {
+            return;
+        }
+
+        var isAuthenticated = state.User.Identity.IsAuthenticated && _user is not null;
+
+        if (isAuthenticated)
+        {
+            _navigationManager.NavigateTo(route);
+        }
     }
 }
