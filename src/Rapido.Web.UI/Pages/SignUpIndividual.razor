@@ -131,8 +131,7 @@
         _submitted = true;
         
         var request = new SignUpRequest(_signUpModel.Email!, _signUpModel.Password!, "Individual");
-        var signUp = () => UserService.SignUpAsync(request);
-        var response = await ApiResponseHandler.HandleAsync(signUp);
+        var response = await ApiResponseHandler.HandleAsync(() => UserService.SignUpAsync(request));
         
         _submitted = false;
         

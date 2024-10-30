@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Rapido.Web.Core.Auth;
 using Rapido.Web.Core.Clients;
+using Rapido.Web.Core.Customers.Services;
 using Rapido.Web.Core.Storage;
 using Rapido.Web.Core.Users.Services;
 using Rapido.Web.Core.Wallets.Services;
@@ -15,6 +16,7 @@ public static class Extensions
         services
             .AddScoped<ILocalStorageService, LocalStorageService>()
             .AddScoped<IUserService, UserService>()
+            .AddScoped<ICustomerService, CustomerService>()
             .AddScoped<IWalletService, WalletService>()
             .AddTransient<IHttpClient, CustomHttpClient>();
 

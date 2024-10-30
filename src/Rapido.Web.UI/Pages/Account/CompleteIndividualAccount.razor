@@ -1,0 +1,255 @@
+﻿@page "/account/individual/complete"
+@using System.ComponentModel.DataAnnotations
+@using System.Net
+@using Microsoft.AspNetCore.Authorization
+@using Rapido.Web.UI.Shared.Navbar
+@using MudBlazor
+@using Rapido.Web.Core.Customers.Requests
+@using Rapido.Web.Core.Customers.Services
+@using Rapido.Web.UI.Services
+@inject IApiResponseHandler ApiResponseHandler
+@inject ICustomerService CustomerService
+@inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
+@attribute [Authorize]
+
+<AccountNavbar/>
+
+<MudContainer Style="display: flex; justify-content: center; margin-top: 1vh">
+    <MudCard Elevation="4" Class="rounded-xl shadow" Style="width: 600px; padding: 5px 15px 5px 15px">
+        <MudCardContent>
+            <MudForm Model="_completeAccountModel" @bind-IsValid="@_isFormValid">
+                <MudGrid>
+                    <MudItem>
+                        <MudText Typo="Typo.h3" Align="Align.Justify">Basic Information</MudText>
+                    </MudItem>
+
+                    <MudItem xs="12">
+                        <MudDivider/>
+                    </MudItem>
+                    
+                    <MudItem>
+                        <MudText Typo="Typo.h6" Style="font-weight: lighter">Name</MudText>
+                        
+                        <MudTextField
+                            Variant="Variant.Outlined"
+                            Margin="Margin.Dense"
+                            @bind-Value="_completeAccountModel.Name"/>
+                    </MudItem>
+
+                    <MudItem>
+                        <MudText Typo="Typo.h6" Style="font-weight: lighter">Nationality</MudText>
+
+                        <MudSelect
+                            @bind-Value="_completeAccountModel.Nationality"
+                            Margin="Margin.Dense"
+                            Variant="Variant.Outlined"
+                            Style="width: 105px"
+                            >
+                            @foreach (var country in _countries)
+                            {
+                                <MudSelectItem Value="@(country.Code)">
+                                    <img src="@(country.FlagUrl)" alt="@(country.Name)" height="14" width="22" class="mr-1"/> @country.Code
+                                </MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudItem>
+
+
+                    <MudFlexBreak/>
+
+                    <MudItem>
+                        <MudText Typo="Typo.h6" Style="font-weight: lighter">FullName</MudText>
+
+                        <MudTextField
+                            Variant="Variant.Outlined"
+                            Margin="Margin.Dense"
+                            @bind-Value="_completeAccountModel.FullName"/>
+                    </MudItem>
+
+                    <MudFlexBreak/>
+
+                    <MudItem>
+                        <MudText Typo="Typo.h3" Align="Align.Justify">Address</MudText>
+                    </MudItem>
+
+                    <MudItem xs="12">
+                        <MudDivider/>
+                    </MudItem>
+
+                    <MudItem>
+                        <MudText Typo="Typo.h6" Style="font-weight: lighter">Country</MudText>
+
+                        <MudSelect
+                            @bind-Value="_completeAccountModel.Country"
+                            Margin="Margin.Dense"
+                            Variant="Variant.Outlined"
+                            Style="width: 210px"
+                        >
+                            @foreach (var country in _countries)
+                            {
+                            <MudSelectItem Value="@(country.Name)">
+                                <img src="@(country.FlagUrl)" alt="@(country.Name)" height="14" width="22" class="mr-1"/> @country.Name
+                            </MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudItem>
+
+                    <MudItem>
+                        <MudText Typo="Typo.h6" Style="font-weight: lighter">Province</MudText>
+
+                        <MudTextField
+                            Variant="Variant.Outlined"
+                            Margin="Margin.Dense"
+                            @bind-Value="_completeAccountModel.Province"/>
+                    </MudItem>
+
+                    <MudItem>
+                        <MudText Typo="Typo.h6" Style="font-weight: lighter">City</MudText>
+
+                        <MudTextField
+                            Variant="Variant.Outlined"
+                            Margin="Margin.Dense"
+                            @bind-Value="_completeAccountModel.City"/>
+                    </MudItem>
+
+                    <MudItem>
+                        <MudText Typo="Typo.h6" Style="font-weight: lighter">Street</MudText>
+
+                        <MudTextField
+                            Variant="Variant.Outlined"
+                            Margin="Margin.Dense"
+                            @bind-Value="_completeAccountModel.Street"/>
+                    </MudItem>
+
+                    <MudItem>
+                        <MudText Typo="Typo.h6" Style="font-weight: lighter">Postal Code</MudText>
+
+                        <MudTextField
+                            Variant="Variant.Outlined"
+                            Margin="Margin.Dense"
+                            @bind-Value="_completeAccountModel.PostalCode"/>
+                    </MudItem>
+                </MudGrid>
+            </MudForm>
+        </MudCardContent>
+        
+        <MudCardActions>
+            <MudGrid>
+                <MudItem xs="9">
+                    <MudText Typo="Typo.caption" Align="Align.Center" Class="text-primary">
+                        <a href="#" style="cursor: pointer">Privacy and Cookie Policy</a>
+                    </MudText>
+                </MudItem>
+
+                <MudItem xs="2">
+                    <MudButton>
+                        <MudButton 
+                            Variant="Variant.Filled" 
+                            Size="Size.Large" 
+                            Class="btn-primary rounded-pill"
+                            OnClick="CompleteCustomerAsync"
+                            Disabled="!_isFormValid || _submitted">Complete</MudButton>
+                    </MudButton>
+                </MudItem>
+            </MudGrid>
+        </MudCardActions>
+    </MudCard>
+</MudContainer>
+
+@code {
+    private bool _submitted;
+    private bool _isFormValid;
+    private readonly CompleteAccountModel _completeAccountModel = new();
+    private readonly CountryModel[] _countries =
+    [
+        new("Austria", "AT", "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/240px-Flag_of_Austria.svg.png"),
+        new("Belgium", "BE", "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Flag_of_Belgium.svg/196px-Flag_of_Belgium.svg.png"),
+        new("Canada", "CA", "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Flag_of_Canada_%28Pantone%29.svg/255px-Flag_of_Canada_%28Pantone%29.svg.png"),
+        new("Czech Republic", "CZ", "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Flag_of_the_Czech_Republic.svg/255px-Flag_of_the_Czech_Republic.svg.png"),
+        new("Cyprus", "CY", "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Flag_of_Cyprus.svg/255px-svg.png"),
+        new("Germany", "DE", "https://upload.wikimedia.org/wikipedia/en/thumb/b/ba/Flag_of_Germany.svg/255px-Flag_of_Germany.svg.png"),
+        new("Denmark", "DK", "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Flag_of_Denmark.svg/225px-Flag_of_Denmark.svg.png"),
+        new("Estonia", "EE", "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Flag_of_Estonia.svg/255px-Flag_of_Estonia.svg.png"),
+        new("Spain", "ES", "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Flag_of_Spain.svg/240px-Flag_of_Spain.svg.svg.png"),
+        new("France", "FR", "https://upload.wikimedia.org/wikipedia/en/thumb/c/c3/Flag_of_France.svg/255px-Flag_of_France.svg.png"),
+        new("United Kingdom", "GB", "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Flag_of_the_United_Kingdom_%281-2%29.svg/255px-Flag_of_the_United_Kingdom_%281-2%29.svg.png"),
+        new("Croatia", "HR", "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Flag_of_Croatia.svg/255px-Flag_of_Croatia.svg.png"),
+        new("Hungary", "HU", "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Flag_of_Hungary.svg/255px-Flag_of_Hungary.svg.png"),
+        new("Lithuania", "LT", "https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Flag_of_Lithuania.svg/255px-Flag_of_Lithuania.svg.png"),
+        new("Luxembourg", "LU", "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Flag_of_Luxembourg_wide.svg/240px-Flag_of_Luxembourg_wide.svg.png"),
+        new("Netherlands", "NL", "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Flag_of_the_Netherlands.svg/255px-Flag_of_the_Netherlands.svg.png"),
+        new("Norway", "NO", "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Flag_of_Norway.svg/234px-Flag_of_Norway.svg.png"),
+        new("Poland", "PL", "https://upload.wikimedia.org/wikipedia/en/thumb/1/12/Flag_of_Poland.svg/255px-Flag_of_Poland.svg.png"),
+        new("Portugal", "PT", "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Flag_of_Portugal.svg/255px-Flag_of_Portugal.svg.png"),
+        new("Sweden", "SE", "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Flag_of_Sweden.svg/240px-Flag_of_Sweden.svg.png"),
+        new("Slovakia", "SK", "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Flag_of_Slovakia.svg/255px-Flag_of_Slovakia.svg.png"),
+        new("Ukraine", "UA", "https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Flag_of_Ukraine.svg/255px-Flag_of_Ukraine.svg.png"),
+        new("United States", "US", "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Flag_of_the_United_States_%28DoS_ECA_Color_Standard%29.svg/255px-Flag_of_the_United_States_ECA_Color_Standard%29.svg.png")
+    ];
+
+    private class CompleteAccountModel
+    {
+        [Required]
+        public string? Name { get; set; }
+        [Required]
+        public string? FullName { get; set; }
+        [Required]
+        public string? Country { get; set; }
+        [Required]
+        public string? Province { get; set; }
+        [Required]
+        public string? City { get; set; }
+        [Required]
+        public string? Street { get; set; }
+        [Required]
+        public string? PostalCode { get; set; }
+        [Required]
+        public string? Nationality { get; set; }
+    }
+
+    private class CountryModel
+    {
+        public string Name { get; set; } 
+        public string Code { get; set; }
+        public string FlagUrl { get; set; }
+
+        public CountryModel(string name, string code, string flagUrl)
+        {
+            Name = name;
+            Code = code;
+            FlagUrl = flagUrl;
+        }
+    }
+
+    private async Task CompleteCustomerAsync()
+    {
+        _submitted = true;
+
+        var request = new CompleteIndividualCustomerRequest(_completeAccountModel.Name!, _completeAccountModel.FullName!, 
+            _completeAccountModel.Country!, _completeAccountModel.Province!, _completeAccountModel.City!, 
+            _completeAccountModel.Street!, _completeAccountModel.PostalCode!, _completeAccountModel.Nationality!);
+
+        var response = await ApiResponseHandler.HandleAsync(() => CustomerService.CompleteIndividualCustomerAsync(request));
+
+        _submitted = false;
+        
+        if (response is null || response.HttpResponse.StatusCode == HttpStatusCode.BadGateway)
+        {
+            Snackbar.Add("Couldn't complete your account - service is unavailable", Severity.Error);
+            return;
+        }
+        
+        if (response.Succeeded)
+        {
+            StateHasChanged();
+            Snackbar.Add("Account has been completed.", Severity.Success);
+            await Task.Delay(1000);
+            NavigationManager.NavigateTo("wallet/summary");
+        }
+        else
+        {
+            Snackbar.Add("There was an error.", Severity.Error);
+        }
+    }
+}

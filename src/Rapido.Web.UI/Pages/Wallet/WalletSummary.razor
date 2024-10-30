@@ -6,10 +6,11 @@
 @using Rapido.Web.Core.Wallets.DTO
 @using Rapido.Web.Core.Wallets.Services
 @using Rapido.Web.UI.Services
+@using Rapido.Web.UI.Shared.Account
 @inject IApiResponseHandler ApiResponseHandler
+@inject IAuthenticationService AuthService
 @inject IWalletService WalletService
 @inject ISnackbar Snackbar
-@inject NavigationManager NavigationManager
 @attribute [Authorize]
 
 <AccountNavbar></AccountNavbar>
@@ -79,16 +80,20 @@
     </MudGrid>
 </MudContainer>
 
+<CompleteAccountPopup AccountCompleted="_accountCompleted"/>
+
 @code {
 
+    private string _accountType = string.Empty;
     private bool _succeeded;
+    private bool _accountCompleted = true;
     private WalletDto _walletDto;
 
     protected override async Task OnInitializedAsync()
     {
+        _accountType = (await AuthService.GetUserAsync())?.AccountType!;
         await GetWallet();
     }
-    
 
     private async Task GetWallet()
     {
@@ -103,8 +108,8 @@
 
         if (response.HttpResponse.StatusCode is HttpStatusCode.NotFound)
         {
+            _accountCompleted = false;
             Snackbar.Add("Please complete your profile to continue using our services.", Severity.Info);
-            NavigationManager.NavigateTo("my-account/complete");
             return;
         }
         
@@ -115,5 +120,4 @@
             _walletDto = response.Value;
         }
     }
-
 }

@@ -1,0 +1,35 @@
+﻿@using MudBlazor
+@inject NavigationManager NavigationManager
+
+<MudOverlay Visible="!AccountCompleted" DarkBackground="true" Absolute="true">
+    <MudCard Elevation="4" Class="rounded-xl" Style="padding: 10px 30px 10px 30px">
+        <MudCardContent>
+            <MudText Typo="Typo.h3" Style="font-weight: normal; color: black">
+                Thank you for joining Rapido
+            </MudText>
+
+            <MudDivider Style="margin: 15px 0 15px 0"/>
+
+            <MudText Typo="Typo.body1">
+                To provide you with the best possible service, we need some additional information.
+            </MudText>
+
+            <MudText Typo="Typo.body1">
+                Please complete your account now.
+            </MudText>
+        </MudCardContent>
+
+        <MudCardActions Style="margin-bottom: 10px">
+            <MudButton Variant="Variant.Filled" Class="btn-primary rounded-pill" OnClick="Navigate">Complete My Account</MudButton>
+        </MudCardActions>
+    </MudCard>
+</MudOverlay>
+
+
+@code {
+
+    [Parameter]
+    public bool AccountCompleted { get; set; }
+
+    private void Navigate() => NavigationManager.NavigateTo("/account/individual/complete");
+}

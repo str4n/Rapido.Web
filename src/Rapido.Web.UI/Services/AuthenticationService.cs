@@ -51,12 +51,13 @@ internal sealed class AuthenticationService : IAuthenticationService
 
         _user = new User
         {
-            Id = response.Value!.UserId.ToString(),
-            Email = response.Value.Email,
-            Role = response.Value.Role,
-            AccessToken = response.Value.AccessToken,
-            RefreshToken = response.Value.RefreshToken,
-            TokenExpires = response.Value.Expires
+            Id = response.Value!.Token.UserId.ToString(),
+            Email = response.Value.Token.Email,
+            Role = response.Value.Token.Role,
+            AccountType = response.Value.AccountType,
+            AccessToken = response.Value.Token.AccessToken,
+            RefreshToken = response.Value.Token.RefreshToken,
+            TokenExpires = response.Value.Token.Expires
         };
         
         await _localStorageService.SetAsync("user", _user);
