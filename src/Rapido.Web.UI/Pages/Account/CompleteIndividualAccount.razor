@@ -4,6 +4,7 @@
 @using Microsoft.AspNetCore.Authorization
 @using Rapido.Web.UI.Shared.Navbar
 @using MudBlazor
+@using Rapido.Web.Core.Customers.DTO
 @using Rapido.Web.Core.Customers.Requests
 @using Rapido.Web.Core.Customers.Services
 @using Rapido.Web.UI.Services
@@ -34,7 +35,8 @@
                         <MudTextField
                             Variant="Variant.Outlined"
                             Margin="Margin.Dense"
-                            @bind-Value="_completeAccountModel.Name"/>
+                            @bind-Value="_completeAccountModel.Name"
+                            Validation="@(async (string name) => await NameTaken(name))"/>
                     </MudItem>
 
                     <MudItem>
@@ -191,8 +193,10 @@
     private class CompleteAccountModel
     {
         [Required]
+        [Length(3, 50)]
         public string? Name { get; set; }
         [Required]
+        [Length(3, 200)]
         public string? FullName { get; set; }
         [Required]
         public string? Country { get; set; }
@@ -220,6 +224,22 @@
             Code = code;
             FlagUrl = flagUrl;
         }
+    }
+    
+    private async Task<string> NameTaken(string name)
+    {
+        var response = await ApiResponseHandler.HandleAsync<NameCheckDto>(async () => await CustomerService.CheckNameAsync(name));
+
+        if (response is null)
+            return null!;
+
+        if (!response.Succeeded)
+            return null!;
+
+        if (response.Value.IsNameTaken)
+            return "Name is already taken.";
+
+        return null!;
     }
 
     private async Task CompleteCustomerAsync()

@@ -1,4 +1,5 @@
 ﻿using Rapido.Web.Core.Clients;
+using Rapido.Web.Core.Customers.DTO;
 using Rapido.Web.Core.Customers.Requests;
 
 namespace Rapido.Web.Core.Customers.Services;
@@ -15,4 +16,7 @@ internal sealed class CustomerService : ICustomerService
 
     public Task<ApiResponse> CompleteIndividualCustomerAsync(CompleteIndividualCustomerRequest request)
         => _httpClient.PostAsync($"{Path}/individual/complete", request);
+
+    public Task<ApiResponse<NameCheckDto?>> CheckNameAsync(string name)
+        => _httpClient.GetAsync<NameCheckDto>($"{Path}/customers/check-name/{name}");
 }

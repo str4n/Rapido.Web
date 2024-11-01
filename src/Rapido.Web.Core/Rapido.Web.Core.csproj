@@ -14,7 +14,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Customers\DTO\" />
       <Folder Include="Wallets\Models\" />
       <Folder Include="Wallets\Requests\" />
     </ItemGroup>
