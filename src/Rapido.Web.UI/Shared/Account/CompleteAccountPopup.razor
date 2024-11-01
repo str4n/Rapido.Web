@@ -1,5 +1,7 @@
 ﻿@using MudBlazor
+@using Rapido.Web.UI.Services
 @inject NavigationManager NavigationManager
+@inject IAuthenticationService AuthService
 
 <MudOverlay Visible="!AccountCompleted" DarkBackground="true" Absolute="true">
     <MudCard Elevation="4" Class="rounded-xl" Style="padding: 10px 30px 10px 30px">
@@ -27,9 +29,30 @@
 
 
 @code {
-
+    private const string IndividualRoute = "account/individual/complete";
+    private const string CorporateRoute = "account/corporate/complete";
+    
     [Parameter]
     public bool AccountCompleted { get; set; }
 
-    private void Navigate() => NavigationManager.NavigateTo("/account/individual/complete");
+    private async Task Navigate()
+    {
+        var user = await AuthService.GetUserAsync();
+
+        if (user is null)
+        {
+            return;
+        }
+
+        switch (user.AccountType)
+        {
+            case "Individual":
+                NavigationManager.NavigateTo(IndividualRoute);
+                break;
+                
+            case "Corporate":
+                NavigationManager.NavigateTo(CorporateRoute);
+                break;
+        }
+    }
 }

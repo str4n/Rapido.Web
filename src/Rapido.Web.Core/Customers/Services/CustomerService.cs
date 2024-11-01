@@ -17,6 +17,9 @@ internal sealed class CustomerService : ICustomerService
     public Task<ApiResponse> CompleteIndividualCustomerAsync(CompleteIndividualCustomerRequest request)
         => _httpClient.PostAsync($"{Path}/individual/complete", request);
 
+    public Task<ApiResponse> CompleteCorporateCustomerAsync(CompleteCorporateCustomerRequest request)
+        => _httpClient.PostAsync($"{Path}/corporate/complete", request);
+
     public Task<ApiResponse<NameCheckDto?>> CheckNameAsync(string name)
         => _httpClient.GetAsync<NameCheckDto>($"{Path}/customers/check-name/{name}");
 }

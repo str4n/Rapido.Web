@@ -7,5 +7,6 @@ namespace Rapido.Web.Core.Customers.Services;
 public interface ICustomerService
 {
     Task<ApiResponse> CompleteIndividualCustomerAsync(CompleteIndividualCustomerRequest request);
+    Task<ApiResponse> CompleteCorporateCustomerAsync(CompleteCorporateCustomerRequest request);
     Task<ApiResponse<NameCheckDto?>> CheckNameAsync(string name);
 }
