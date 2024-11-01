@@ -249,7 +249,14 @@
         }
         else
         {
+            if (response.Error is not null)
+            {
+                Snackbar.Add(response.Error.Reason, Severity.Error);
+                return;
+            }
+            
             Snackbar.Add("There was an error.", Severity.Error);
         }
+        
     }
 }

@@ -3,6 +3,7 @@
 @using System.Net
 @using System.Text.RegularExpressions
 @using MudBlazor
+@using Rapido.Web.Core.Users.DTO
 @using Rapido.Web.Core.Users.Requests
 @using Rapido.Web.Core.Users.Services
 @using Rapido.Web.UI.Services
@@ -36,7 +37,8 @@
                                 @bind-Value="_signUpModel.Email"
                                 For="@(() => _signUpModel.Email)"
                                 Required="true"
-                                RequiredError="Email is required!"/>
+                                RequiredError="Email is required!"
+                                Validation="@(async (string email) => await EmailTaken(email))"/>
                         </MudItem>
 
                         <MudItem xs="12" sm="12">
@@ -119,10 +121,26 @@
             yield return "Password must contain at least one digit";
     }
     
-    private string PasswordMatch(string arg)
+    private string PasswordMatch(string password)
     {
-        if (_passwordField.Value != arg)
+        if (_passwordField.Value != password)
             return "Passwords don't match";
+        return null!;
+    }
+
+    private async Task<string> EmailTaken(string email)
+    {
+        var response = await ApiResponseHandler.HandleAsync<EmailCheckDto>(async () => await UserService.CheckEmailAsync(email));
+
+        if (response is null)
+            return null!;
+
+        if (!response.Succeeded)
+            return null!;
+
+        if (response.Value.IsEmailTaken)
+            return "Email address is already taken.";
+
         return null!;
     }
 
@@ -148,6 +166,16 @@
             _signUpModel.Password = default;
             Snackbar.Add("Account has been created.", Severity.Success);
             NavigationManager.NavigateTo("log-in");
+        }
+        else
+        {
+            if (response.Error is not null)
+            {
+                Snackbar.Add(response.Error.Reason, Severity.Error);
+                return;
+            }
+            
+            Snackbar.Add("There was an error.", Severity.Error);
         }
     }
 }

@@ -8,4 +8,5 @@ public interface IUserService
 {
     Task<ApiResponse> SignUpAsync(SignUpRequest request);
     Task<ApiResponse<AuthDto?>> SignInAsync(SignInRequest request);
+    Task<ApiResponse<EmailCheckDto?>> CheckEmailAsync(string email);
 }

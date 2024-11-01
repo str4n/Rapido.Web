@@ -19,4 +19,7 @@ internal sealed class UserService : IUserService
 
     public Task<ApiResponse<AuthDto?>> SignInAsync(SignInRequest request)
         => _httpClient.PostAsync<AuthDto>($"{Path}/sign-in", request);
+
+    public Task<ApiResponse<EmailCheckDto?>> CheckEmailAsync(string email)
+        => _httpClient.GetAsync<EmailCheckDto>($"{Path}/users/check-email/{email}");
 }

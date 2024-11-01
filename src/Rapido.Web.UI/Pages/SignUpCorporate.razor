@@ -131,8 +131,7 @@
         _submitted = true;
         
         var request = new SignUpRequest(_signUpModel.Email!, _signUpModel.Password!, "Corporate");
-        var signUp = () => UserService.SignUpAsync(request);
-        var response = await ApiResponseHandler.HandleAsync(signUp);
+        var response = await ApiResponseHandler.HandleAsync(() => UserService.SignUpAsync(request));
         
         _submitted = false;
         
@@ -149,6 +148,16 @@
             _signUpModel.Password = default;
             Snackbar.Add("Account has been created.", Severity.Success);
             NavigationManager.NavigateTo("log-in");
+        }
+        else
+        {
+            if (response.Error is not null)
+            {
+                Snackbar.Add(response.Error.Reason, Severity.Error);
+                return;
+            }
+            
+            Snackbar.Add("There was an error.", Severity.Error);
         }
     }
 }

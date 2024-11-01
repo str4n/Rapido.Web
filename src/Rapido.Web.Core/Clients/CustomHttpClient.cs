@@ -90,9 +90,15 @@ internal sealed class CustomHttpClient : IHttpClient
             var content = await response.Content.ReadAsStringAsync();
             if (!isValid)
             {
+                var errorResponse = string.IsNullOrWhiteSpace(content)
+                    ? default
+                    : JsonSerializer.Deserialize<ErrorResponse>(content, SerializerOptions);
+
+                var error = errorResponse?.Error;
+                
                 _logger.LogError(response.ToString());
                 _logger.LogError(content);
-                return new ApiResponse<T?>(default, response, false);
+                return new ApiResponse<T?>(default, response, false, error);
             }
 
             var result = string.IsNullOrWhiteSpace(content)
