@@ -36,6 +36,16 @@ body {
     -webkit-text-fill-color: transparent;
 }
 
+.text-black-light {
+    color: black;
+    font-weight: lighter;
+}
+
+.text-black {
+    color: black;
+    font-weight: normal;
+}
+
 .shadow {
     -webkit-box-shadow: 8px 15px 50px -28px rgba(66, 68, 90, 1);
     -moz-box-shadow: 8px 15px 50px -28px rgba(66, 68, 90, 1);

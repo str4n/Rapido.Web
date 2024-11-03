@@ -8,26 +8,32 @@
 @using Rapido.Web.UI.Services
 @using Rapido.Web.UI.Shared.Account
 @inject IApiResponseHandler ApiResponseHandler
-@inject IAuthenticationService AuthService
 @inject IWalletService WalletService
 @inject ISnackbar Snackbar
 @attribute [Authorize]
 
 <AccountNavbar></AccountNavbar>
 
-<MudContainer Style="margin-top: 8vh">
+<MudContainer Style="margin-top: 5vh">
     <MudGrid>
         <MudItem xs="6" sm="6">
             <MudCard Elevation="4" Class="rounded-xl shadow" Style="padding: 1vh 2vw 1vh 2vw">
                 <MudCardContent>
-                    <MudText Typo="Typo.h3" Style="font-weight: lighter; color: black">Current balance</MudText>
+                    <MudText Typo="Typo.h3" Class="text-black-light">Current balance</MudText>
 
                     <MudDivider Style="margin-top: 2vh"/>
 
                     <MudContainer>
                         <MudText Typo="Typo.h1" Style="font-weight: lighter; color: #262626; margin-top: 3vh">
-                            $0
-                            <MudText Style="font-weight: normal; opacity: 0.65; color: #616769; font-size: large; letter-spacing: 0.05rem;" Inline="true">Available</MudText>
+                            @if (_wallet is not null)
+                            {
+                                @_currencySymbol@_wallet.TotalBalance  
+                            }
+                            else
+                            {
+                                @("Loading...");
+                            }
+                            <MudText Style="font-weight: normal; opacity: 0.65; color: #616769; font-size: large; letter-spacing: 0.05rem;" Inline="true">  Available</MudText>
                         </MudText>
                     </MudContainer>
                 </MudCardContent>
@@ -43,24 +49,25 @@
         </MudItem>
 
         <MudItem xs="6" sm="6">
-            <MudCard Elevation="4" Class="rounded-xl shadow" Style="padding: 1vh 2vw 1vh 2vw;">
+            <MudCard Elevation="4" Class="rounded-xl shadow" Style="padding: 1vh 3vw 1vh 3vw;">
                 <MudCardContent>
-                    <MudContainer Style="margin-top: 1vh">
+                    <MudContainer Style="margin-top: 1vh; display: flex; justify-content: center">
                         <MudButton
                             Variant="Variant.Filled"
                             Size="Size.Large"
                             Class="rounded-pill btn-primary"
-                            Style="margin: 0 80px 0 20px"
                             Href="">
-                            <MudText Typo="Typo.h5" Style="font-weight: bolder; margin: 2px 30px 2px 30px">Send</MudText>
+                            <MudText Typo="Typo.h5" Style="font-weight: bolder; margin: 0.25rem 2rem 0.25rem 2rem">Send</MudText>
                         </MudButton>
+                        
+                        <MudSpacer/>
 
                         <MudButton
                             Variant="Variant.Filled"
                             Size="Size.Large"
                             Class="rounded-pill btn-primary"
                             Href="">
-                            <MudText Typo="Typo.h5" Style="font-weight: bolder; margin: 2px 15px 2px 15px">Request</MudText>
+                            <MudText Typo="Typo.h5" Style="font-weight: bolder; margin: 0.25rem 1rem 0.25rem 1rem">Request</MudText>
                         </MudButton>
                     </MudContainer>
                 </MudCardContent>
@@ -70,10 +77,39 @@
         <MudItem xs="6" sm="6">
             <MudCard Elevation="4" Class="rounded-xl shadow" Style="padding: 1vh 2vw 1vh 2vw;">
                 <MudCardContent>
-                    <MudText Typo="Typo.h3" Style="font-weight: lighter; color: black">Recent Activity</MudText>
+                    <MudText Typo="Typo.h3" Class="text-black-light">Recent Activity</MudText>
 
                     <MudDivider Style="margin-top: 2vh"/>
 
+                    @if (_wallet is not null)
+                    {
+                        @foreach (var transfer in _wallet.Transfers)
+                        {
+                            <MudContainer Style="margin: 2vh 0 2vh 0">
+                                <MudGrid>
+                                    <MudItem xs="2">
+                                        <MudText Align="Align.Center" Typo="Typo.h5" Class="text-black">NOV</MudText>
+                                        <MudText Align="Align.Center" Typo="Typo.h5" Class="text-black">3</MudText>
+                                    </MudItem>
+                                    
+                                    <MudItem xs="7">
+                                        <MudText Typo="Typo.h5" Class="text-black">@transfer.Name</MudText>
+                                        <MudText Typo="Typo.h5" Class="text-black">@MapTransferType(transfer.Type)</MudText>
+                                    </MudItem>
+
+                                    <MudItem xs="3" Style="display: flex; align-items: center">
+                                        <MudText
+                                            Typo="Typo.h5"
+                                            Style="@($"color: {MapTransferTypeToColor(transfer.Type)}")"
+                                            Align="Align.Right">@MapTransferTypeToSign(transfer.Type)@GetCurrencySymbol(transfer.Currency)@transfer.Amount
+                                        </MudText>
+                                    </MudItem>
+
+                                    <MudDivider Style="margin: 2vh 0 2vh 0"/>
+                                </MudGrid>
+                            </MudContainer>
+                        }
+                    }
                 </MudCardContent>
             </MudCard>
         </MudItem>
@@ -83,15 +119,14 @@
 <CompleteAccountPopup AccountCompleted="_accountCompleted"/>
 
 @code {
-
-    private string _accountType = string.Empty;
+    
     private bool _succeeded;
     private bool _accountCompleted = true;
-    private WalletDto _walletDto;
+    private string _currencySymbol = "$";
+    private WalletDto? _wallet;
 
     protected override async Task OnInitializedAsync()
     {
-        _accountType = (await AuthService.GetUserAsync())?.AccountType!;
         await GetWallet();
     }
 
@@ -117,7 +152,42 @@
 
         if (_succeeded)
         {
-            _walletDto = response.Value;
+            _wallet = response.Value;
+            _currencySymbol = GetCurrencySymbol(_wallet.Balances.Single(x => x.IsPrimary).Currency);
         }
     }
+
+    private string GetCurrencySymbol(string currency) 
+        => currency switch
+        {
+            "USD" => "$",
+            "PLN" => "PLN",
+            "EUR" => "\u20ac",
+            "GBP" => "\u00a3",
+            _ => string.Empty
+        };
+
+    private string MapTransferType(string transferType) 
+        => transferType switch
+        {
+            "IncomingTransfer" => "Payment received",
+            "OutgoingTransfer" => "Payment sent",
+            _ => string.Empty
+        };
+
+    private string MapTransferTypeToSign(string transferType)
+        => transferType switch
+        {
+            "IncomingTransfer" => "+",
+            "OutgoingTransfer" => "-",
+            _ => string.Empty
+        };
+
+    private string MapTransferTypeToColor(string transferType)
+        => transferType switch
+        {
+            "IncomingTransfer" => "green",
+            "OutgoingTransfer" => "red",
+            _ => "black"
+        };
 }
