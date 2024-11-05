@@ -13,7 +13,9 @@
     
     <MudSpacer/>
 
-    <MudIconButton Icon="@Icons.Material.Filled.Notifications" Color="Color.Inherit" Size="Size.Medium" aria-label="settings" />
+    <MudBadge Content="100" Color="Color.Error" Overlap="true">
+        <MudIconButton Icon="@Icons.Material.Filled.Notifications" Color="Color.Inherit" Size="Size.Medium" aria-label="settings" />
+    </MudBadge>
     <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Inherit" Size="Size.Medium" Style="margin-right: 1vw" aria-label="settings" />
     <MudText Typo="Typo.h5" Style="font-weight: bold; margin-right: 13vw"><a style="color: white; cursor: pointer" @onclick="SignOut">Log out</a></MudText>
 

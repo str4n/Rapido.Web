@@ -38,7 +38,8 @@
                                 For="@(() => _signUpModel.Email)"
                                 Required="true"
                                 RequiredError="Email is required!"
-                                Validation="@(async (string email) => await EmailTaken(email))"/>
+                                Validation="@(async (string email) => await EmailTaken(email))"
+                                @ref="_emailField"/>
                         </MudItem>
 
                         <MudItem xs="12" sm="12">
@@ -86,7 +87,8 @@
     private bool _submitted;
     private bool _isFormValid;
     private SignUpModel _signUpModel = new();
-    private MudTextField<string> _passwordField;
+    private MudTextField<string>? _passwordField;
+    private MudTextField<string>? _emailField;
 
     private class SignUpModel
     {
@@ -123,13 +125,16 @@
     
     private string PasswordMatch(string password)
     {
-        if (_passwordField.Value != password)
+        if (_passwordField?.Value != password)
             return "Passwords don't match";
         return null!;
     }
 
     private async Task<string> EmailTaken(string email)
     {
+        if (string.IsNullOrWhiteSpace(_emailField?.Value))
+            return null!;
+        
         var response = await ApiResponseHandler.HandleAsync<EmailCheckDto>(async () => await UserService.CheckEmailAsync(email));
 
         if (response is null)

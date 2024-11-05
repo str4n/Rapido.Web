@@ -77,12 +77,31 @@ body {
 
 .btn-primary:hover, .btn-primary:focus, .btn-primary:active {
     color: white;
-    background: var(--bs-light-blue);
+    background: #0073e6;
 }
 
 .btn-primary:disabled {
     color: white !important;
     background: var(--bs-blue) !important;
+    text-transform: none;
+}
+
+.btn-secondary {
+    color: white;
+    background: var(--bs-secondary);
+    text-transform: none;
+    padding-left: 23px;
+    padding-right: 23px;
+}
+
+.btn-secondary:hover, .btn-secondary:focus, .btn-secondary:active {
+    color: white;
+    background: var(--bs-light-blue);
+}
+
+.btn-secondary:disabled {
+    color: white !important;
+    background: var(--bs-secondary) !important;
     text-transform: none;
 }
 
@@ -99,7 +118,7 @@ body {
     background: var(--bs-blue);
 }
 
-.btn-outline-lb {
+.btn-outline-secondary {
     border: 0.18rem solid var(--bs-light-blue);
     color: var(--bs-light-blue);
     text-transform: none;
@@ -107,7 +126,7 @@ body {
     padding-right: 23px;
 }
 
-.btn-outline-lb:hover, .btn-outline-lb:focus, .btn-outline-lb:active {
+.btn-outline-secondary:hover, .btn-outline-secondary:focus, .btn-outline-secondary:active {
     color: white;
     background: var(--bs-light-blue);
 }
@@ -136,4 +155,17 @@ input[type=radio]:checked {
     border-color: #8f98f9;
     outline: 0;
     box-shadow: 0 0 0 0.25rem rgba(30, 48, 243, 0.25);
+}
+
+.currency-selector {
+    border: 0.18rem solid var(--bs-light-blue);
+    color: var(--bs-light-blue);
+    text-transform: none;
+    padding-right: 10px;
+    padding-left: 15px;
+}
+
+.mud-select .mud-select-input .mud-input-slot {
+    color: var(--bs-light-blue);
+    font-weight: 450;
 }

@@ -1,0 +1,149 @@
+﻿@page "/wallet/transfer"
+@using System.ComponentModel.DataAnnotations
+@using System.Net
+@using Microsoft.AspNetCore.Authorization
+@using MudBlazor
+@using Rapido.Web.Core.Wallets.Requests
+@using Rapido.Web.Core.Wallets.Services
+@using Rapido.Web.UI.Services
+@using Rapido.Web.UI.Shared.Navbar
+@inject NavigationManager NavigationManager
+@inject IApiResponseHandler ApiResponseHandler
+@inject IWalletService WalletService
+@inject IAuthenticationService AuthService
+@inject ISnackbar Snackbar
+@attribute [Authorize]
+
+<AccountNavbar/>
+
+<MudContainer Style="margin-top: 5vh; display: flex; justify-content: center">
+    <MudForm Model="@_transferFundsModel" @bind-IsValid="@_isFormValid">
+        <DataAnnotationsValidator/>
+        <MudContainer Style="padding: 2rem 20rem 2rem 20rem">
+            <MudCard Elevation="4" Class="rounded-xl shadow">
+                <MudCardContent>
+                    <MudGrid Style="padding: 2rem 5rem 2rem 5rem" Justify="Justify.Center">
+                        <MudItem xs="2">
+                            <MudAvatar Color="Color.Secondary" Size="Size.Large">
+                                <MudIcon Icon="@Icons.Material.Filled.Person" Size="Size.Large"/>
+                            </MudAvatar>
+                        </MudItem>
+                        
+                        <MudItem xs="8">
+                            <MudTextField
+                                Label="Receiver name"
+                                @bind-Value="_transferFundsModel.ReceiverName"/>
+                        </MudItem>
+                        
+                        <MudFlexBreak/>
+                        
+                        <MudItem xs="2"/>
+
+                        <MudItem xs="6">
+                            <MudNumericField
+                                Variant="Variant.Text"
+                                Format="F2"
+                                Underline="false"
+                                HideSpinButtons="true"
+                                Style="font-size: xxx-large; font-weight: lighter"
+                                @bind-Value="_transferFundsModel.Amount"/>
+                        </MudItem>
+
+                        <MudFlexBreak/>
+                        
+                        <MudItem>
+                            <MudContainer Class="rounded-pill currency-selector">
+                                <MudSelect
+                                    Text="@("USD")"
+                                    @bind-Value="_transferFundsModel.Currency"
+                                    Style="width: 60px"
+                                    Underline="false"
+                                    AdornmentColor="Color.Secondary">
+                                    @foreach (var currency in _currencies)
+                                    {
+                                        <MudSelectItem Value="@currency">
+                                            @currency
+                                        </MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudContainer>
+                        </MudItem>
+
+                        <MudFlexBreak/>
+                        
+                        <MudDivider Style="margin-top: 4vh"/>
+                        
+                        <MudItem xs="12">
+                            <MudTextField
+                                Variant="Variant.Text"
+                                @bind-Value="_transferFundsModel.TransferName"
+                                Adornment="Adornment.Start"
+                                AdornmentIcon="@Icons.Material.Outlined.Edit"
+                                Text="Funds transfer"
+                                Underline="false">
+                            </MudTextField>
+                        </MudItem>
+                        
+                    </MudGrid>
+                </MudCardContent>
+            </MudCard>
+        </MudContainer>
+    </MudForm>
+</MudContainer>
+
+<MudContainer Style="display: flex; justify-content: center; margin-bottom: 2vh">
+    <MudButton 
+        Variant="Variant.Filled" 
+        Size="Size.Large" 
+        OnClick="TransferFundsAsync"
+        Disabled="_submitted || !_isFormValid" 
+        Class="rounded-pill btn-primary" 
+        Style="padding: 10px 80px 10px 80px">
+        <MudText Typo="Typo.h5" Style="font-weight: bolder;">Send</MudText>
+    </MudButton>
+</MudContainer>
+
+<MudContainer Style="display: flex; justify-content: center;"> 
+    <MudText
+        Typo="Typo.h5"
+        Style="color: #5f5f5f; font-weight: lighter; cursor: pointer"
+        @onclick="@(() => NavigationManager.NavigateTo("wallet/summary"))">
+        Cancel
+    </MudText>
+</MudContainer>
+
+@code {
+    private bool _isFormValid;
+    private bool _submitted;
+    private readonly TransferFundsModel _transferFundsModel = new();
+    
+    private class TransferFundsModel
+    {
+        [Required]
+        public string? ReceiverName { get; set; }
+        [Required] 
+        public string? TransferName { get; set; } = "Funds transfer";
+
+        [Required] public string? Currency { get; set; } = "USD";
+        public double Amount { get; set; } = 0.00;
+    }
+    
+    private readonly string[] _currencies = ["USD", "EUR", "PLN", "GBP"];
+
+    private async Task TransferFundsAsync()
+    {
+        _submitted = true;
+
+        var ownerId = (await AuthService.GetUserAsync())?.Id;
+        var request = new TransferFundsRequest(Guid.Parse(ownerId!), _transferFundsModel.ReceiverName!, _transferFundsModel.TransferName!, _transferFundsModel.Currency!, _transferFundsModel.Amount);
+        var response = await ApiResponseHandler.HandleAsync(() => WalletService.TransferFundsAsync(request));
+
+        _submitted = false;
+        
+        if (response is null || response.HttpResponse.StatusCode == HttpStatusCode.BadGateway)
+        {
+            Snackbar.Add("Couldn't complete your account - service is unavailable", Severity.Error);
+            return;
+        }
+    }
+}

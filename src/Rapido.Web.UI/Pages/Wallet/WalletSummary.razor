@@ -12,7 +12,7 @@
 @inject ISnackbar Snackbar
 @attribute [Authorize]
 
-<AccountNavbar></AccountNavbar>
+<AccountNavbar/>
 
 <MudContainer Style="margin-top: 5vh">
     <MudGrid>
@@ -40,7 +40,7 @@
 
                 <MudCardActions>
                     <MudContainer Style="margin: 1vh 0 2vh 0">
-                        <MudButton Variant="Variant.Outlined" Size="Size.Large" Class="rounded-pill btn-outline-lb" Href="">
+                        <MudButton Variant="Variant.Outlined" Size="Size.Large" Class="rounded-pill btn-outline-secondary" Href="">
                             <MudText Typo="Typo.h5" Style="font-weight: normal">Transfer Funds</MudText>
                         </MudButton>
                     </MudContainer>
@@ -56,7 +56,7 @@
                             Variant="Variant.Filled"
                             Size="Size.Large"
                             Class="rounded-pill btn-primary"
-                            Href="">
+                            Href="wallet/transfer">
                             <MudText Typo="Typo.h5" Style="font-weight: bolder; margin: 0.25rem 2rem 0.25rem 2rem">Send</MudText>
                         </MudButton>
                         
