@@ -1,6 +1,7 @@
 ﻿@using MudBlazor
 @using Rapido.Web.UI.Shared.Layout
 @using Microsoft.AspNetCore.Components.Authorization
+@using Rapido.Web.UI.Themes
 @inject NavigationManager NavigationManager
 
 <Router AppAssembly="@typeof(Program).Assembly">
@@ -29,7 +30,7 @@
         </LayoutView>
     </NotFound>
 </Router>
-<MudThemeProvider/>
+<MudThemeProvider Theme="@(new PrimaryTheme())"/>
 <MudPopoverProvider/>
 <MudDialogProvider/>
 <MudSnackbarProvider/>
