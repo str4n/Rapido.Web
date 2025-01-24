@@ -39,3 +39,16 @@ dotnet run --project src/Rapido.Web.UI
 # Development
 
 This project is still under active development and may be missing some features.
+
+# Presentation
+
+### Sample UI screenshots:
+
+
+![Landing page](https://github.com/str4n/Rapido.Web/blob/master/assets/landing-page.png) **Landing page**
+
+![Login page](https://github.com/str4n/Rapido.Web/blob/master/assets/log-in.png) **Log-in**
+
+![Wallet summary page](https://github.com/str4n/Rapido.Web/blob/master/assets/wallet-summary.png) **Wallet summary**
+
+![Transfer funds page](https://github.com/str4n/Rapido.Web/blob/master/assets/transfer-funds.png) **Transfer funds**
